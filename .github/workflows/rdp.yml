@@ -1,4 +1,4 @@
-name: Windows RDP
+name: Windows RDP Cloudflare
 
 on:
   workflow_dispatch:
@@ -19,26 +19,23 @@ jobs:
         run: |
           net user runneradmin P@ssw0rd123
 
-      - name: Download ngrok
+      - name: Install cloudflared
         run: |
-          Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile "ngrok.zip"
-          Expand-Archive -Path ngrok.zip -DestinationPath . -Force
+          Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe" -OutFile "cloudflared.exe"
 
-      - name: Start ngrok
+      - name: Start Tunnel
         run: |
-          .\ngrok.exe config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          Start-Process -FilePath ".\ngrok.exe" -ArgumentList "tcp","3389" -NoNewWindow
+          Start-Process -FilePath ".\cloudflared.exe" -ArgumentList "tunnel","--url","tcp://localhost:3389" -NoNewWindow
+          Start-Sleep -Seconds 25
 
-      - name: Show Connection Info
+      - name: Show Info
         run: |
-          Start-Sleep -Seconds 20
-          $response = Invoke-RestMethod -Uri "http://localhost:4040/api/tunnels"
-          $url = $response.tunnels[0].public_url
           Write-Host "========================================"
-          Write-Host "RDP Address : $url"
-          Write-Host "Username    : runneradmin"
-          Write-Host "Password    : P@ssw0rd123"
+          Write-Host "Username : runneradmin"
+          Write-Host "Password : P@ssw0rd123"
           Write-Host "========================================"
+          Write-Host "الان تو لاگ‌های cloudflared دنبال آدرس trycloudflare.com بگرد"
+          Write-Host "آدرس چیزی شبیه این میاد: xxxxx.trycloudflare.com"
 
       - name: Keep Alive
         run: |
