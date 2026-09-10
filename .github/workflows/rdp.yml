@@ -14,10 +14,11 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0
 
-    - name: Create User
+       - name: Create User
       run: |
-        net user runneradmin P@ssw0rd123 /add
-        net localgroup administrators runneradmin /add
+        net user runneradmin P@ssw0rd123 /add 2>$null
+        net localgroup administrators runneradmin /add 2>$null
+        net user runneradmin P@ssw0rd123
 
     - name: Download ngrok
       run: |
